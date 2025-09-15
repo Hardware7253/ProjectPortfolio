@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Generic VFD Driver | Project Portfolio</title>
+	<link rel="canonical" href="https://hardware7253.github.io/ProjectPortfolio/">
+	<link rel='alternate' type='application/rss+xml' title="Project Portfolio RSS" href="https://hardware7253.github.io/ProjectPortfolio/index.xml">
+	<link rel='stylesheet' type='text/css' href="https://hardware7253.github.io/ProjectPortfolio/style.css">
+	<link rel="icon" href="https://hardware7253.github.io/ProjectPortfolio/site.ico">
+	<meta name="description" content="A generic driver board for vacuum fluorescent displays">
+	<meta name="keywords" content="Prototypes, Uni Projects">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="index, follow">
+	<meta charset="utf-8">
+</head>
+<body>
+<main>
+<header><h1 id="tag_Generic VFD Driver">Generic VFD Driver</h1></header>
+<article>
+<div id="backcontainer">
+  <a href="https://hardware7253.github.io/ProjectPortfolio/">
+    <div id="backbtn">&lt; Back</div>
+  </a>
+</div>
+
+<p>This is a VFD driver with hardware and software that can be used to find related grid and segment pins.
+Finding these relationships saves a huge amount of manual work that would be required to implement a driver solution for a VFD with no documentation.
+Lack of documentation is a common issue for VFD displays, since many of them were produced for only one product thus had no external documentation.
+This is a university group project; I&rsquo;ve been designing the electronics, and my group mate has been designing the software.</p>
+<p>To drive a VFD you need an alternating current for the filament, a high voltage for the anodes, and a means of switching the high voltage with digital logic.
+To produce the alternating current, an H-bridge and timer was used.
+The H-bridge uses 2 p-FETs and 2 n-FETs; this is different from the usual 4 n-FETs used for an H-bridge.
+I did this because the filament H-bridge only switches 5 V; that would create 0 V gate-source voltage for the high-side MOSFETs when the H-bridge is on.
+To create the high anode voltage (typically &gt; 12 V) I added a boost converter to the board with an output range of 10 - 30 V. To determine the component values, I simply followed the equations provided in the manufacturer&rsquo;s datasheet.
+For routing, I tried to keep the high-current loops as small as possible, but this was difficult due to the large number of through-hole components (using through-hole is heavily incentivised by the uni).
+Finally, a high-side p-channel switching array is used to switch the VFD grids and segments to the high boost converter voltage.</p>
+<p>Current sensing is used to find related grid and segment pins.
+The grids draw a high current (~700 uA), and the segments draw a low current (~40 uA).
+Grids will always draw current when they&rsquo;re on, but the segments will only draw current if they&rsquo;re associated with any grid(s) that are currently active.
+So the software can go through and find all the grid pins by checking for the high current.
+Then the software can check all the segment pins and look for a small current increase to find which segments belong to which grids.
+To detect these current changes with hardware the ground plane for the high-side switch ICs was isolated from the main ground plane.
+Then the two ground planes can be connected with a resistor, and the voltage drop across that resistor will be proportional to the total current draw of the VFD&rsquo;s grids and segments.
+Op-amps are used to amplify this voltage drop to a suitable level to get the full dynamic range out of the MCU&rsquo;s ADC.
+There are two current-sensing circuits; one for sensing low currents and one for sensing high currents. They just have different current-sense resistors and op-amp gains.</p>
+<p>This project is still a work in progress, my electronics design is done (I think), but we don&rsquo;t have any prototype boards or parts yet.
+I have done some prototyping on breadboards though, see pictures below.</p>
+<div class="masongallery">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/PCBPic.png" loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/FilamentAC.png"  title="Filament alternating current from H-bridge"loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/AmplifierTest.jpg"  title="Testing current sensing on a breadboard"loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/HBridgeTest.jpg"  title="Testing filament H-bridge and timer on a breadboard"loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/CurrentSensing.png" loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/BoostConverter.png" loading="lazy">
+    <img src="https://hardware7253.github.io/ProjectPortfolio/VVFD/Filament.png" loading="lazy">
+</div>
+
+	<div class="ghlink">
+		<a href="https://github.com/For-the-republic/VVFD">Project GitHub Link</a>
+	</div>
+<div style="clear:both" class=taglist>Related<br><a id="tag_prototypes" href="https://hardware7253.github.io/ProjectPortfolio/tags/prototypes">Prototypes</a> &middot; <a id="tag_uni projects" href="https://hardware7253.github.io/ProjectPortfolio/tags/uni-projects">Uni Projects</a></div>
+</article>
+</main>
+<footer>
+	<a href="https://hardware7253.github.io/ProjectPortfolio/">Return Home</a>
+</footer>
+
+</body>
+</html>
