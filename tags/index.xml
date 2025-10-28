@@ -81,11 +81,9 @@
 		<pubDate>Wed, 20 Aug 2025 00:57:57 +1200</pubDate>
 		
 		<guid>https://hardware7253.github.io/ProjectPortfolio/vvfd/</guid>
-		<description>&lt;p&gt;This is a VFD driver with hardware and software that can be used to find related grid and segment pins.
-Finding these relationships saves a huge amount of manual work that would be required to implement a driver solution for a VFD with no documentation.
-Lack of documentation is a common issue for VFD displays, since many of them were produced for only one product thus had no external documentation.
-This is a university group project; I&amp;rsquo;ve been designing the electronics, and my group mate has been designing the software.&lt;/p&gt;
-&lt;p&gt;To drive a VFD you need an alternating current for the filament, a high voltage for the anodes, and a means of switching the high voltage with digital logic.
+		<description>&lt;p&gt;The goal of this project was to make a VFD driver that would work with many different displays. A current sensing feature was also planned for finding the pinout of the attached VFD.
+This is a university group project; I designed the electronics, and my group mate wrote the software.&lt;/p&gt;
+&lt;p&gt;To drive a VFD you need an alternating current for the filament, a high voltage for the grids and anodes, and a means of switching the high voltage with digital logic.
 To produce the alternating current, an H-bridge and timer was used.
 The H-bridge uses 2 p-FETs and 2 n-FETs; this is different from the usual 4 n-FETs used for an H-bridge.
 I did this because the filament H-bridge only switches 5 V; that would create 0 V gate-source voltage for the high-side MOSFETs when the H-bridge is on.
@@ -101,16 +99,15 @@ To detect these current changes with hardware the ground plane for the high-side
 Then the two ground planes can be connected with a resistor, and the voltage drop across that resistor will be proportional to the total current draw of the VFD&amp;rsquo;s grids and segments.
 Op-amps are used to amplify this voltage drop to a suitable level to get the full dynamic range out of the MCU&amp;rsquo;s ADC.
 There are two current-sensing circuits; one for sensing low currents and one for sensing high currents. They just have different current-sense resistors and op-amp gains.&lt;/p&gt;
-&lt;p&gt;This project is still a work in progress, my electronics design is done (I think), but we don&amp;rsquo;t have any prototype boards or parts yet.
-I have done some prototyping on breadboards though, see pictures below.&lt;/p&gt;
-&lt;div class=&#34;masongallery&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/PCBPic.png&#34; loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/FilamentAC.png&#34;  title=&#34;Filament alternating current from H-bridge&#34;loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/AmplifierTest.jpg&#34;  title=&#34;Testing current sensing on a breadboard&#34;loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/HBridgeTest.jpg&#34;  title=&#34;Testing filament H-bridge and timer on a breadboard&#34;loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/CurrentSensing.png&#34; loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/BoostConverter.png&#34; loading=&#34;lazy&#34;&gt;
-    &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/Filament.png&#34; loading=&#34;lazy&#34;&gt;
+&lt;p&gt;The power electronics on the driver board worked fine; however, the current sensing did not work as intended.
+I failed to consider the leakage current of the high-side driver array, which made the current sensing circuit useless.
+To fix this in future iterations, individual p-channel MOSFETs could be used with external passive components connected to power nets that are transparent to the current sensing.&lt;/p&gt;
+&lt;p&gt;This project was an interesting application for some power electronics. I enjoyed designing the H-bridge and the timing circuit, as I haven&amp;rsquo;t done that before.
+If you&amp;rsquo;d like to read more, the &lt;a href=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/Report.pdf&#34;&gt;formal report&lt;/a&gt; my group mate and I wrote includes a more in-depth write-up on the hardware design.&lt;/p&gt;
+&lt;div class=&#34;gallery&#34;&gt;
+   &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/TestSetup.png&#34;  title=&#34;Testing setup&#34;loading=&#34;lazy&#34;&gt;
+   &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/DriverBoard.png&#34;  title=&#34;Cascadable driverboard&#34;loading=&#34;lazy&#34;&gt;
+   &lt;img src=&#34;https://hardware7253.github.io/ProjectPortfolio/VVFD/VFD.jpg&#34;  title=&#34;Driving a VFD&#34;loading=&#34;lazy&#34;&gt;
 &lt;/div&gt;
 </description>
 	</item>

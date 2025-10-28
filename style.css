@@ -9,6 +9,7 @@
   --title-color-dark2: color-mix(in srgb, var(--title-color), black 20%);
 
   --font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(16px, 1.5vw + 0.5rem, 22px);
 }
 
 
@@ -21,17 +22,28 @@ body {
   font-family: var(--font-family);
 }
 
-
 p {
   margin-bottom: 1.5rem; 
+  width: 60%;
+  text-align: justify;
+  justify-self: center;
 }
 
-.summary {
-  max-width: 100%;
+@media (max-width: 1000px) {
+  p {
+    width: 90%;
+  }
+}
+
+.projdates, .summary {
+  margin-bottom: 1.5rem; 
+  width: 80%;
+  text-align: center;
+  justify-self: center;
 }
 
 a {
-    color: var(--link-color)
+  color: var(--link-color)
 }
 
 a:hover {
@@ -107,7 +119,7 @@ footer {
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   justify-content: center;
   gap: 10px;
   padding: 10px;
