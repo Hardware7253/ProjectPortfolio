@@ -1,0 +1,26 @@
+<!doctype html><html lang=en><head><title>VFD Animation Player | LWQ Project Portfolio</title><link rel=canonical href=https://hardware7253.github.io/ProjectPortfolio/><link rel=alternate type=application/rss+xml title="LWQ Project Portfolio RSS" href=https://hardware7253.github.io/ProjectPortfolio/index.xml><link rel=stylesheet type=text/css href=https://hardware7253.github.io/ProjectPortfolio/style.css><link rel=icon href=https://hardware7253.github.io/ProjectPortfolio/site.ico><meta name=description content="A clock that can also play uploaded animations from flash memory"><meta name=keywords content="Personal Projects,Finished"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="index, follow"><meta charset=utf-8></head><body><main><header><h1 id="tag_VFD Animation Player">VFD Animation Player</h1></header><article><div id=backcontainer><a href=https://hardware7253.github.io/ProjectPortfolio/><div id=backbtn>&lt; Back</div></a></div><p>This project started when I purchased a Futaba GP1247AI vacuum fluorescent display (VFD) from AliExpress.
+I started by designing a PCB to power the display since it needs 50V, 75V, and floating 5V power supplies. I achieved
+this functionality using 3 boost converters. Notably, I included an 8V boost converter for the VFD filament. 8V was applied to
+one side of the filament, and the other was connected to ground with a 3.3V zener diode; this provided ~5V across the filament
+but with a higher potential to ground as the datasheet called for. This 3.3V bias above ground is called the VFD cut-off voltage.
+The cut-off voltage is important to ensure the phosphors don&rsquo;t glow faintly even when they are switched off.</p><p>Initially for the animation I had the idea of streaming frames so the display could be used like a computer monitor.
+To implement this functionality, I made a python program to convert a GIF into my own custom binary format and then
+made another program to send frame packets over USB CDC. On the microcontroller side I used the <a href=https://github.com/hathach/tinyusb>TinyUSB C library</a> to help
+with USB communication on an STM32F407 dev board.
+To send frames to the display I had to read the datasheet and implement my own library so I could use DMA with the SPI transfers.
+I used the <a href=https://github.com/olikraus/u8g2>U8G2 C library</a> for initial tests but scrapped due to it being too slow.
+After a week of fixing bugs I was finally able to successfully stream frames over USB and began planning a new PCB design with an onboard MCU.
+The streaming code is available <a href=https://github.com/Hardware7253/GP1247AI/tree/streaming/Code>here</a>, but it&rsquo;s pretty messy.</p><p>For the new revision I decided I wanted onboard flash so an animation could be loaded onto the device and then replayed without needing a program to constantly run on a PC.
+So the new PCB featured a 16MiB flash chip as well as an STM32F405. Additionally, the zener diode filament bias setup was swapped with a 5V isolated power supply module.
+Instead of wasting 1.3W of heat through the zener, the isolated power supply simply had one of its outputs floated to the 3.3V bus.
+I also included a tilt switch so the device could work in two orientations, and I added a 32.768 kHz oscillator and coin-cell battery for timekeeping.</p><p>With the new hardware, I implemented a clock and reworked the animation player, these modes can be selected by the switch on the front panel.
+The animation now streams from the onboard flash, but I kept some USB functionality.
+USB is now used to upload the animation from the PC and to sync, read, and calibrate the onboard RTC.
+After calibrating the RTC, I was able to get accuracy within ~3 seconds a month.
+I also designed an open-frame case in <a href="https://cad.onshape.com/documents/882155266f535413a8470fc6/w/778e5146a8e5c8e9a6860b08/e/c22616e2800eca8c44aeef0c?renderMode=0&amp;uiState=69b5425a69f4f7345f6cf355">onshape</a>.</p><p>This is the first big project I&rsquo;ve done in C; previously, I&rsquo;d used Rust.
+Now I really appreciate the simplicity of C and the greater level of support compared to Rust embedded programming.
+Perhaps next time I should mix in a little bit of C++ for classes and methods for classes for a bit better organisation.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/gp1247ai/front.jpg loading=lazy>
+<img src=https://hardware7253.github.io/ProjectPortfolio/gp1247ai/on.jpg loading=lazy>
+<img src=https://hardware7253.github.io/ProjectPortfolio/gp1247ai/back.jpg loading=lazy>
+<video controls loading=lazy title="Playing a wireframe 3d animation I made">
+<source src=https://hardware7253.github.io/ProjectPortfolio/gp1247ai/animation.mp4></video></div><div class=ghlink><a href=https://github.com/Hardware7253/GP1247AI>Project GitHub Link</a></div><div style=clear:both class=taglist>Related<br><a id="tag_personal projects" href=https://hardware7253.github.io/ProjectPortfolio/tags/personal-projects>Personal Projects</a> &#183; <a id=tag_finished href=https://hardware7253.github.io/ProjectPortfolio/tags/finished>Finished</a></div></article></main><footer><a href=https://hardware7253.github.io/ProjectPortfolio/>Return Home</a></footer></body></html>
