@@ -6,8 +6,8 @@ If the phase relationship of the output voltages is known, then the phase of the
 The first PCB revision used MOSFET bidirectional power switches to allow switching of range resistors.
 However, the MOSFETs had significant stray capacitance, introducing unwanted low pass filters into the signal path.
 To overcome this issue I plan to use signal relays for range resistor switching on subsequent PCB revisions.
-As a temporary workaround, I soldered jumpers to manually switched range resistors.</p><p>The first prototype PCB also had issues with switching noise being present in the LCR test waveform.
-I&rsquo;m confident the noise is from the power supplies themselves,
-not from return current issues, as the analogue and digital sections should be separated sufficiently.
-In the next PCB revision I&rsquo;ll add LC filtering to the switching power supplies to alleviate the noise problem.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/LCR/lcr_prototype_1.png loading=lazy>
+As a temporary workaround, I soldered jumpers to manually switched range resistors.</p><p>The first prototype PCB also had issues with noise being present in the LCR test waveform.
+I&rsquo;m confident the noise is caused by oscillations in one of the opamps,
+likely caused by large stray complex impedances in the long jumper wires used for the temporary range resistors.
+Replacing the jumper wires with an on-PCB solution should fix this issue in the next revision.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/LCR/lcr_prototype_1.png loading=lazy>
 <img src=https://hardware7253.github.io/ProjectPortfolio/LCR/lcr_prototype_2.jpg loading=lazy></div><div class=ghlink><a href=https://github.com/Hardware7253/lcr>Project GitHub Link</a></div><div style=clear:both class=taglist>Related<br><a id="tag_personal projects" href=https://hardware7253.github.io/ProjectPortfolio/tags/personal-projects>Personal Projects</a> &#183; <a id=tag_prototypes href=https://hardware7253.github.io/ProjectPortfolio/tags/prototypes>Prototypes</a></div></article></main><footer><a href=https://hardware7253.github.io/ProjectPortfolio/>Return Home</a></footer></body></html>
