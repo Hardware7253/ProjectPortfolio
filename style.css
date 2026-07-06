@@ -25,10 +25,11 @@ body {
 }
 
 p {
-  margin-bottom: 1.5rem; 
   width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
   text-align: justify;
-  justify-self: center;
 }
 
 @media (max-width: 1000px) {
