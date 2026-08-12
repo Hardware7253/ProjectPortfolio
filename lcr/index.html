@@ -14,7 +14,8 @@ Initially I thought this noise came from the power supplies, but after testing I
 I realised I was having problems with opamp ringing due to stray capacitance in the traces. To solve this issue
 I switched from the high performance opamps I was using, to ones with a much lower gain bandwidth product, therefore
 more margin for stray component effects. Stray effects are only significant because of the increased length
-from routing multiple combinations of feedback resistors for the opamp (multiple range resistors).</p><p>The final design is able to measure a wide range of passive component values, but it&rsquo;s accuracy hasn&rsquo;t been tested against a calibrated lab instrument.
+from routing multiple combinations of feedback resistors for the opamp (multiple range resistors).</p><p>During this project I also learned that USB VBUS should only be loaded by 10uF max. So on the newest iteration of
+the LCR PCB I&rsquo;ve included a soft-start chip to allow for more capacitors to be connected.</p><p>The final design is able to measure a wide range of passive component values, but it&rsquo;s accuracy hasn&rsquo;t been tested against a calibrated lab instrument.
 The LCR features multiple test frequencies (0.1, 1, 10, 100 kHz), autoranging, and is able to notify the user when the DUT
 could not be autoranged for the desired test frequency.
 There is naturally some error in the measurements, since only one of the Kelvin probes is actually functioning as a Kelvin probe.
