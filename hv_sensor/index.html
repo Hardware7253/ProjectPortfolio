@@ -1,0 +1,63 @@
+<!doctype html><html lang=en><head><title>High-Voltage Sensor Board | LWQ Project Portfolio</title><link rel=canonical href=https://hardware7253.github.io/ProjectPortfolio/><link rel=alternate type=application/rss+xml title="LWQ Project Portfolio RSS" href=https://hardware7253.github.io/ProjectPortfolio/index.xml><link rel=stylesheet type=text/css href=https://hardware7253.github.io/ProjectPortfolio/style.css><link rel=icon href=https://hardware7253.github.io/ProjectPortfolio/site.ico><meta name=description content="A sensor board designed to capture voltage and current waveforms, and transfer data to a control PC"><meta name=keywords content="Uni Projects,Finished"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="index, follow"><meta charset=utf-8></head><body><main><header><h1 id="tag_High-Voltage Sensor Board">High-Voltage Sensor Board</h1></header><article><div id=backcontainer><a href=https://hardware7253.github.io/ProjectPortfolio/><div id=backbtn>&lt; Back</div></a></div><p>The high-voltage sensing board was developed by myself and four other people as part of a university project.
+The stakeholder wanted a fully automated testing solution for the university&rsquo;s 200 kVA, 400 kV transformer, controlled
+by a static frequency converter. This required an electrically isolated sensor board to interface with the HV transformer, along with
+control PC software to read data from the remote sensor board.
+The sensor board needed to include voltage measurement, current measurement, temperature sensing, and smoke detection.
+On this project I was responsible for the digital electronics design, temperature sensing, PCB layout, and embedded software.
+My teammates focused on the fault latching circuit, current measurement, voltage measurement, and the control PC software.</p><p>For the digital section I chose an STM32C071C8T6 microcontroller for its low price.
+I paired the microcontroller with a W5500 Ethernet chip to enable communication with the control PC.
+Ethernet was chosen because it provides electrical isolation through its magnetics.
+Also the W5500 uses SPI, which let me use any MCU I wanted. This was greatly preferred to a wireless solution because I don&rsquo;t have much
+experience with wireless chips like nordic or ESP32.
+Ethernet also offers easy expandability through network switches, can be paired with media converters to enable fibre for
+even better isolation, and avoids the security considerations that come with storing network keys in firmware, as Wi-Fi would require.
+The digital section also included the power supplies. I used the typical LDOs for this, but also added a 5 V soft-start chip,
+because on the <a href=/lcr>LCR</a> project I learned that USB VBUS should only be loaded with 10 uF max without a soft-start chip.
+The PCB layout was largely business as usual, except that I used the <a href=https://jlcpcb.com/pcb-impedance-calculator>JLCPCB Impedance Calculator</a>
+to calculate the differential trace width and spacing needed for 100 Ω characteristic impedance on the Ethernet MDI traces.
+I also used KiCad&rsquo;s differential length-matching tools for this section, which I hadn&rsquo;t done before.
+I&rsquo;m not sure why I hadn&rsquo;t used them earlier, since the same technique is required for USB differential pairs, but I&rsquo;ll carry the knowledge forward into future designs.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/HV/eth_layout.png loading=lazy></div><p>For the temperature measurement circuit I based my design on a <a href=https://www.ti.com/lit/an/sboa323a/sboa323a.pdf>Texas Instruments application note</a>.
+It uses a voltage divider to produce a voltage proportional to temperature, which an op-amp circuit then biases and amplifies to make full use of the MCU&rsquo;s
+ADC input range across the desired NTC temperature range.
+I redid the <a href=https://hardware7253.github.io/ProjectPortfolio/HV/ThermistorNotes.pdf>hand calculations</a> for the op-amp circuit&rsquo;s transfer function to make sure I understood how to size the components correctly.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/HV/simplified_temp_schem.png loading=lazy></div><p>I also wrote the embedded software, which mainly consists of a TCP server that sends and receives commands from the control PC.
+Supporting the TCP server are separate modules for reading samples, checking for faults, initialising the Ethernet hardware,
+and writing to flash.</p><p>Notably, all analogue inputs share a single ADC, so I used DMA to read each channel into a packed buffer via a module called
+sample_raw. This module sets a flag when a new sample buffer arrives, and a second module reads that flag and unpacks the packed buffer
+into a separate buffer per ADC channel. Some analogue channels, such as the temperature readings, have most of their samples discarded
+since they don&rsquo;t need to be sampled as fast as the AC current and voltage waveforms. Like the raw sampling module, this second module sets a flag once its
+buffers are ready to be read. ADC reads occur 64 times per period of the test waveform (nominally 50 Hz).</p><p>The Ethernet module registers hardware callbacks for Wiznet&rsquo;s library and provides simple functions for checking link status and
+requesting an IP address from the router via DHCP.</p><p>The fault module reads faults from the fault-latching hardware on the board and converts these into a fault
+status byte, where each bit represents a different fault. It also checks the current, voltage, and temperature readings against configurable fault
+thresholds. The current and voltage thresholds are set in RMS, then converted into the maximum raw ADC sample those
+waveforms may reach before a fault is triggered. Temperature thresholds are set directly in degrees Celsius.
+There is also a no-comms fault, which triggers after an adjustable timeout if communication with the control PC is lost.
+This software-defined fault processing runs once the sample buffers are ready, whereas hardware fault polling only runs
+when the fault latch interrupt fires.
+When a software fault triggers, a pin is driven high to set the hardware fault latch. The latch can only be cleared by
+a physical button or a command from the control PC.</p><p>The TCP server sends sample buffers to the control PC whenever they&rsquo;re ready and sends fault status updates whenever it changes.
+It also receives commands from the control PC, including commands for setting fault limits on the board,
+covering current, voltage, temperature, and the communication timeout.
+Other commands include setting correction factors, which convert a raw ADC reading into a real-world value, such as an ADC reading of
+3060 corresponding to an instantaneous voltage of 480 kV. The control PC can send correction factors to make small calibration tweaks
+without needing to recompile and reflash different sensor-board firmware for each calibration.
+Correction factors are only used in the embedded software for converting the stored fault limit value with units (e.g. volts)
+back into an ADC read.
+There are also commands for setting the ADC sample rate, which allows testing at frequencies other than the 50 Hz default, and a command
+for saving the current configuration to flash.</p><p>The command format is custom: one byte for the command ID, four bytes specifying the argument length, then the command buffer itself, which
+can be any number of bytes. The longest commands used for transmitting voltage and current buffers are around 1000 bytes long.
+Commands received by the sensor board are only around 10 bytes long, so its buffers don&rsquo;t need to be very large.
+The TCP server module also handles closing and reopening the socket if the client disconnects, so it never gets stuck waiting on a dead connection.</p><p>The flash module provides functions for writing calibration and fault-related data to flash.
+It uses a struct that other modules can populate, then calls the flash write function to store the whole struct at once,
+which makes it easy to interface with memory.
+On each write, it compares the new data byte by byte against what&rsquo;s already stored in flash, and cancels the write
+if nothing has changed to preserve flash write endurance.
+The function that reads parameters from flash runs on startup, so the previously set fault limits are in effect
+before communication with the control PC is established. This lets the board protect the HV transformer even without a PC connection,
+and lets users safely set the communication timeout to something like 20 s instead of 1 s, to avoid losing long tests to a spurious reset,
+at the small cost of some lost data.</p><p>Finally, a watchdog resets the MCU if a software bug occurs, such as a hardfault.
+This is crucial so the board never silently drops protection in the event of a software bug.</p><p>Alongside the embedded software, I also wrote a small amount of Python code for communicating with the sensor board.
+It&rsquo;s implemented as a class with public members for the key data read from the sensor board, such as temperatures and the current and voltage buffers.
+One of my teammates handles processing these buffers into RMS values and calculating phase difference and THD.
+Like the embedded software, this class handles the other end disconnecting and reconnecting. It uses the same commands as the embedded server,
+just with the direction of TX and RX reversed.</p><br><div class=gallery><img src=https://hardware7253.github.io/ProjectPortfolio/HV/board.jpg loading=lazy>
+<img src=https://hardware7253.github.io/ProjectPortfolio/HV/digital.png loading=lazy></div><div style=clear:both class=taglist>Related<br><a id="tag_uni projects" href=https://hardware7253.github.io/ProjectPortfolio/tags/uni-projects>Uni Projects</a> &#183; <a id=tag_finished href=https://hardware7253.github.io/ProjectPortfolio/tags/finished>Finished</a></div></article></main><footer><a href=https://hardware7253.github.io/ProjectPortfolio/>Return Home</a></footer></body></html>

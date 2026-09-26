@@ -15,7 +15,8 @@ I realised I was having problems with opamp ringing due to stray capacitance in 
 I switched from the high performance opamps I was using, to ones with a much lower gain bandwidth product, therefore
 more margin for stray component effects. Stray effects are only significant because of the increased length
 from routing multiple combinations of feedback resistors for the opamp (multiple range resistors).</p><p>During this project I also learned that USB VBUS should only be loaded by 10uF max. So on the newest iteration of
-the LCR PCB I&rsquo;ve included a soft-start chip to allow for more capacitors to be connected.</p><p>The final design is able to measure a wide range of passive component values, but it&rsquo;s accuracy hasn&rsquo;t been tested against a calibrated lab instrument.
+the LCR PCB I&rsquo;ve included a soft-start chip to allow for more capacitors to be connected.</p><p>The final design is able to measure a wide range of passive component values, the accuracy hasn&rsquo;t been fully verified,
+but see the photos below for how it performs measuring a 170 uH inductor vs a lab LCR at my university.
 The LCR features multiple test frequencies (0.1, 1, 10, 100 kHz), autoranging, and is able to notify the user when the DUT
 could not be autoranged for the desired test frequency.
 There is naturally some error in the measurements, since only one of the Kelvin probes is actually functioning as a Kelvin probe.
@@ -28,4 +29,6 @@ Current must flow through the black probe, so its impedance is included in the m
 <img src=https://hardware7253.github.io/ProjectPortfolio/LCR/c_test_100u.jpg title="Testing 100uF capacitor" loading=lazy>
 <img src=https://hardware7253.github.io/ProjectPortfolio/LCR/l_test_10u.jpg title="Testing 10uH inductor" loading=lazy>
 <img src=https://hardware7253.github.io/ProjectPortfolio/LCR/l_test_100u.jpg title="Testing 100uH inductor" loading=lazy>
+<img src=https://hardware7253.github.io/ProjectPortfolio/LCR/l_test_170u.jpg title="Testing 170uH inductor" loading=lazy>
+<img src=https://hardware7253.github.io/ProjectPortfolio/LCR/l_test_170u_lab.jpg title="Testing 170uH inductor with lab LCR" loading=lazy>
 <img src=https://hardware7253.github.io/ProjectPortfolio/LCR/r_test_4r7.jpg title="Testing 4.7 ohm resistor" loading=lazy></div><div class=ghlink><a href=https://github.com/Hardware7253/lcr>Project GitHub Link</a></div><div style=clear:both class=taglist>Related<br><a id="tag_personal projects" href=https://hardware7253.github.io/ProjectPortfolio/tags/personal-projects>Personal Projects</a> &#183; <a id=tag_finished href=https://hardware7253.github.io/ProjectPortfolio/tags/finished>Finished</a></div></article></main><footer><a href=https://hardware7253.github.io/ProjectPortfolio/>Return Home</a></footer></body></html>
